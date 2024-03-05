@@ -150,7 +150,7 @@ export async function POST({ request, locals, params, getClientAddress }) {
 	// });
 	
 	const embeddings = new OpenAIEmbeddings({
-		azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY, // Ensure this is set in your environment variables
+		azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY || 'da747f09fb1b44658b577fb8ea7cce1c', // Ensure this is set in your environment variables
 		azureOpenAIApiVersion: "2024-02-15-preview", // Make sure this version is correct and supported
 		azureOpenAIApiInstanceName: "caniel-rag-chatbot-ncs", // This should match your Azure OpenAI instance name
 		azureOpenAIApiDeploymentName: "caniel-text-embeddings-model-ada-002", // This should match your deployment name
