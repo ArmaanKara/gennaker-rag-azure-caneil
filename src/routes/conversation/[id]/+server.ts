@@ -190,7 +190,7 @@ export async function POST({ request, locals, params, getClientAddress }) {
 	}
 
 	let enrichedPrompt = newPrompt;
-	console.log('bestResponse.matches[0].metadata?.text_chunk', bestResponse?.matches[0].metadata?.text_chunk);
+	// console.log('bestResponse.matches[0].metadata?.text_chunk', bestResponse?.matches[0].metadata?.text_chunk);
 
 	if (bestResponse && bestResponse.matches.length > 0) {
 		if (bestResponse.matches[0].score >= 0.8) {
