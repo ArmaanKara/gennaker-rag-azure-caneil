@@ -141,13 +141,6 @@ export async function POST({ request, locals, params, getClientAddress }) {
 	// 	batchSize: 512, // Default value if omitted is 512. Max is 2048
 	// 	modelName:"text-embedding-3-large",
 	// });
-	// const embeddings = new OpenAIEmbeddings({
-	// 	azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY, // In Node.js defaults to process.env.AZURE_OPENAI_API_KEY
-	// 	azureOpenAIApiVersion: process.env.AZURE_OPENAI_API_VERSION, // In Node.js defaults to process.env.AZURE_OPENAI_API_VERSION
-	// 	azureOpenAIApiInstanceName: process.env.AZURE_OPENAI_API_INSTANCE_NAME, // In Node.js defaults to process.env.AZURE_OPENAI_API_INSTANCE_NAME
-	// 	azureOpenAIApiDeploymentName: "caniel-text-embeddings-model-ada-002" || process.env.AZURE_OPENAI_API_EMBEDDINGS_DEPLOYMENT_NAME, // In Node.js defaults to process.env.AZURE_OPENAI_API_EMBEDDINGS_DEPLOYMENT_NAME
-	// 	azureOpenAIBasePath: 'https://caniel-rag-chatbot-ncs.openai.azure.com/openai/deployments/caniel-text-embeddings-model-ada-002',
-	// });
 	
 	const embeddings = new OpenAIEmbeddings({
 		azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY || 'da747f09fb1b44658b577fb8ea7cce1c', // Ensure this is set in your environment variables
