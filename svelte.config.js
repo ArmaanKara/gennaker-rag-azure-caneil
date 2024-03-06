@@ -17,7 +17,9 @@ const config = {
 	// preprocess: vitePreprocess(),
 
 	kit: {
-		adapter: adapter(),
+		adapter: adapter({
+			maxDuration: 60,
+		}),
 
 		paths: {
 			base: process.env.APP_BASE || "",
