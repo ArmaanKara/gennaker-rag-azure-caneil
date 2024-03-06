@@ -3,6 +3,9 @@
 	import { page } from "$app/stores";
 	import { createEventDispatcher } from "svelte";
 
+    // define isLoading variable
+    let isLoading = false;
+
 	import CarbonCheckmark from "~icons/carbon/checkmark";
 	import CarbonTrashCan from "~icons/carbon/trash-can";
 	import CarbonClose from "~icons/carbon/close";
@@ -19,7 +22,12 @@
 	}>();
 </script>
 
-<a
+{#if isLoading}
+    <div class="spinner-container">
+    	<div class="spinner"></div>
+	</div>
+{:else}
+    <a
 	data-sveltekit-noscroll
 	on:mouseleave={() => {
 		confirmDelete = false;
@@ -57,8 +65,13 @@
 			class="flex h-5 w-5 items-center justify-center rounded md:hidden md:group-hover:flex"
 			title="Confirm delete action"
 			on:click|preventDefault={() => {
-				confirmDelete = false;
-				dispatch("deleteConversation", conv.id);
+				isLoading = true
+				setTimeout(() => {
+					confirmDelete = false;
+					dispatch("deleteConversation", conv.id);
+					isLoading = false
+				}, 3000)
+
 			}}
 		>
 			<CarbonCheckmark class="text-xs text-gray-400 hover:text-gray-500 dark:hover:text-gray-300" />
@@ -91,6 +104,7 @@
 			title="Delete conversation"
 			on:click|preventDefault={(event) => {
 				if (event.shiftKey) {
+					console.log('delete')
 					dispatch("deleteConversation", conv.id);
 				} else {
 					confirmDelete = true;
@@ -101,3 +115,29 @@
 		</button>
 	{/if}
 </a>
+
+{/if}
+
+
+<style>
+    .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border-left-color: #09f;
+        animation: spin 1s ease infinite;
+    }
+	.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
