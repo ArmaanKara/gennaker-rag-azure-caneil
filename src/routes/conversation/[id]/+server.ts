@@ -160,9 +160,7 @@ export async function POST({ request, locals, params, getClientAddress }) {
 	});
 	const index = pinecone.index("caniel-rag-chat-bot-ada-002");
 
-	// console.log('before vecotrization');
 	const vectorizedInput = await embeddings.embedQuery(newPrompt || '');
-	console.log('vectorizedInput', vectorizedInput)
 
 	const namespaces = ["BPVC_II_D_C-2023", "BPVC_V-2023", "API_579_2007", "BPVC_VIII_2-2023", "BPVC_VIII_1-2023", "B31_3_2022_w_ERRATAS", "BPVC_I-2023", "B31_1_2022", "BPVC_IX-2023", "B31.12-2019_wErrata", "BPVC_IV-2023", "ExampleProblemManual2009", "BPVC_XIII-2023", "API_510_E11_EN_wE1"]
 	
@@ -172,9 +170,10 @@ export async function POST({ request, locals, params, getClientAddress }) {
 	for (const ns of namespaces) {
 		const response = await index.namespace(ns).query({
 			vector: vectorizedInput,
-			topK: 1,
+			topK: 5,
 			includeMetadata: true
 		});
+		console.log('res', response)
 
 		if (response.matches && response?.matches[0]?.score > bestScore) {
 			bestScore = response.matches[0].score;
@@ -183,15 +182,25 @@ export async function POST({ request, locals, params, getClientAddress }) {
 	}
 
 	let enrichedPrompt = newPrompt;
-	// console.log('bestResponse.matches[0].metadata?.text_chunk', bestResponse?.matches[0].metadata?.text_chunk);
 
 	if (bestResponse && bestResponse.matches.length > 0) {
-		if (bestResponse.matches[0].score >= 0.8) {
-			const knowledgeBaseInfo = bestResponse.matches[0].metadata?.text_chunk;
-			enrichedPrompt += `\n Context: ${knowledgeBaseInfo}`;
+		if (bestResponse.matches[0].score >= 0.85) {
+			// const knowledgeBaseInfo = bestResponse.matches[0].metadata?.text_chunk;
+			// enrichedPrompt += `\n Context: ${knowledgeBaseInfo}`;
+			// Iterate over each match in the bestResponse.matches array
+			let concatenatedTextChunks = ''
+			bestResponse.matches.forEach(match => {
+				if (match?.metadata?.text_chunk) {
+					concatenatedTextChunks += match.metadata.text_chunk + " "; // Adding a space for separation
+				}
+			});
+
+			if (concatenatedTextChunks) {
+				enrichedPrompt += `\n Context: ${concatenatedTextChunks.trim()}`;
+			}
 		}
 	}
-	
+
 	// files is an array of base64 strings encoding Blob objects
 	// we need to convert this array to an array of File objects
 
