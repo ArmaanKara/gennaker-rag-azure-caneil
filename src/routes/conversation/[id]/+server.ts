@@ -134,13 +134,7 @@ export async function POST({ request, locals, params, getClientAddress }) {
 			files: z.optional(z.array(z.string())),
 		})
 			.parse(json);
-	console.log('before embeddings')
 	
-	// const embeddings = new OpenAIEmbeddings({
-	// 	openAIApiKey: process.env.OPENAI_API_KEY || "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", 
-	// 	batchSize: 512, // Default value if omitted is 512. Max is 2048
-	// 	modelName:"text-embedding-3-large",
-	// });
 	
 	const embeddings = new OpenAIEmbeddings({
 		azureOpenAIApiKey: process.env.AZURE_OPENAI_API_KEY || 'da747f09fb1b44658b577fb8ea7cce1c', // Ensure this is set in your environment variables
@@ -149,8 +143,6 @@ export async function POST({ request, locals, params, getClientAddress }) {
 		azureOpenAIApiDeploymentName: "caniel-text-embeddings-model-ada-002", // This should match your deployment name
 		azureOpenAIBasePath: "https://caniel-rag-chatbot-ncs.openai.azure.com/openai/deployments", // Do not include the deployment name here
 	});
-
-	console.log('embeddings', embeddings);
 
 	const apiKey = process.env.PINECONE_API_KEY || "4e7a2c87-9b9c-43f7-b4eb-696678b27f6e";
 	// const environment = process.env.PINECONE_ENVIRONMENT || "YOUR_ENV";
@@ -173,7 +165,6 @@ export async function POST({ request, locals, params, getClientAddress }) {
 			topK: 5,
 			includeMetadata: true
 		});
-		console.log('res', response)
 
 		if (response.matches && response?.matches[0]?.score > bestScore) {
 			bestScore = response.matches[0].score;
@@ -328,6 +319,42 @@ export async function POST({ request, locals, params, getClientAddress }) {
 
 	let doneStreaming = false;
 
+	// let generatedSummarizeText = ''
+
+	// try {
+	// 	// Assume `getSummary` is a method that uses your LLM to summarize content
+	// 	const summarizedContent = messagesForPrompt.map(m => m.content).join(' ');
+	// 	const payload = [
+	// 		{
+	// 			from: 'user',
+	// 			content: summarizedContent,
+	// 		}]
+		
+	// 	console.log('payload', payload)
+
+	// 	// Now `summarizedContent` is what you want to send to your LLM for generating the next message
+	// 	const endpoint = await model.getEndpoint();
+	// 	const response = await endpoint({
+	// 		messages: payload, // Using summarized content
+	// 		preprompt: 'You are an AI Assistant and your job is to summarize the content give in less than 500 words. Keep it short simply and to the point.',
+	// 		continueMessage: isContinue,
+	// 	})
+	// 	for await (const value of response) {
+	// 		// Process each value - for example, logging it to the console
+	// 		console.log('Generated value:', value);
+	// 		if (value?.generated_text) {
+	// 			generatedSummarizeText += value?.generated_text
+	// 		}
+			
+	// 		// Depending on your application, you might append these values to a string,
+	// 		// update the UI, or handle them in other ways.
+	// 	}
+	// } catch (e) {
+	// 	console.log('e', e)
+	// 	// update({ type: "status", status: "error", message: (e as Error).message });
+	// 	// Handle error
+	// }
+
 	// we now build the stream
 	const stream = new ReadableStream({
 		async start(controller) {
@@ -389,7 +416,30 @@ export async function POST({ request, locals, params, getClientAddress }) {
 				messageToWriteTo.webSearch = await runWebSearch(conv, messagesForPrompt, update);
 			}
 
-			// inject websearch result & optionally images into the messages
+			// console.log('conversation messageForPrompt', messagesForPrompt)
+			// const summarizeMessageForPrompt = [{
+			// from: 'system',
+			// content: generatedSummarizeText,
+			// createdAt: 2024-03-18T05:43:41.021Z,
+			// updatedAt: 2024-03-18T05:43:50.797Z,
+			// ancestors: [
+			// 'a3df54cb-a2ce-4abf-ad60-f8edb036cd29',
+			// 'e0eb5ea2-c3be-4587-b407-59f92ee5e18c',
+			// '5a8ea2b3-8e36-4a45-acc1-3ddad45961d9',
+			// '9f938b13-67b3-4555-96d9-e9fb291d4c84',
+			// 'ff2a3019-5dcc-4426-9f05-869c2bd601c7',
+			// 'ef6169b5-18ea-4551-9be2-a74e6c568f18',
+			// '0fa0ac6b-e6d5-4f52-a026-c2b80f639287',
+			// '6b280606-a0a7-43aa-a701-5ec856be8a14',
+			// '3d5a629e-ba52-4c6e-a1d1-ea312f2e56d5',
+			// '6ecad315-3a89-4c09-b133-b4dce35af598'
+			// ],
+			// id: '79610313-c3ac-420a-a134-5d1759a040f6',
+			// children: [ 'd59147e9-665a-45b5-b779-3dfebe98b066' ],
+			// updates: [ [Object] ],
+			// 	interrupted: false
+			// }]
+
 			const processedMessages = await preprocessMessages(
 				messagesForPrompt,
 				messageToWriteTo.webSearch,
@@ -397,7 +447,60 @@ export async function POST({ request, locals, params, getClientAddress }) {
 				convId
 			);
 
+			// Example function to flatten the conversation thread
+			function flattenThread(messages: any[]) {
+				const flatList: any[] = [];
+				function recurseThroughMessages(message: { children: any[]; }) {
+					flatList.push(message);
+					if (message.children && message.children.length) {
+						message.children.forEach((childId: any) => {
+							const childMessage = messages.find((msg: { id: any; }) => msg.id === childId);
+							if (childMessage) {
+								recurseThroughMessages(childMessage);
+							}
+						});
+					}
+				}
+				messages.forEach((msg: { ancestors: string | any[]; }) => {
+					if (!msg.ancestors || msg.ancestors.length === 0) { // Start with root messages
+						recurseThroughMessages(msg);
+					}
+				});
+				// console.log('flattenList', flatList)
+				return flatList;
+			}
+
+			const flattenedMessages = flattenThread(processedMessages);
+			// console.log('flattenedMessages', flattenedMessages)
+			let totalCharLength = flattenedMessages.reduce((acc, msg) => acc + msg.content.length, 0);
+
+			console.log(`Total character length: ${totalCharLength}`);
+
+			const maxAllowedLength = (8192 * (55 / 25))
+			// console.log('enrichedPrompt', enrichedPrompt);
+
+			// // Calculate the total character length of messages in messagesForPrompt
+			// const totalCharLength = messagesForPrompt.reduce((total, message) => total + message.content.length, 0);
+
+			console.log('maxAllowedLength', maxAllowedLength);
+			// console.log('totalCharLength', totalCharLength);
+
+
+			// Trim older messages if the total character length exceeds maxAllowedLength
+			while (totalCharLength > maxAllowedLength && processedMessages.length > 0) {
+				const removedMessage = processedMessages.shift(); 
+				totalCharLength -= removedMessage?.content?.length || 0;
+			}
+
+
+			// inject websearch result & optionally images into the messages
+
 			const previousText = messageToWriteTo.content;
+
+			console.log('processedMessages', processedMessages);
+
+
+			//Looks like summary wont work fully what we need to do is take in the messagesForPrompt and check if the total length of it is greater than the allowed amount 8192 - newPrompt then trim it else just summarize it and readd the obj back into the messagesForPrompt
 
 			try {
 				const endpoint = await model.getEndpoint();
