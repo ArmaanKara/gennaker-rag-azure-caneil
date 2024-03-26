@@ -27,7 +27,7 @@
 	const dispatch = createEventDispatcher<{ message: string }>();
 </script>
 
-<div class="my-auto grid gap-8 lg:grid-cols-3">
+<div class="my-auto grid gap-8 lg:grid-cols-1">
 	<div class="lg:col-span-1">
 		<div>
 			<div class="mb-3 flex items-center text-2xl font-semibold">
@@ -39,9 +39,9 @@
 					v{PUBLIC_VERSION}
 				</div>
 			</div>
-			<p class="text-base text-gray-600 dark:text-gray-400">
+			<p class="text-base text-gray-600 dark:text-gray-400" style="width: 70%;">
 				{PUBLIC_APP_DESCRIPTION ||
-					"Making the community's best AI chat models available to everyone."}
+					"Caniel AI's Rag Chatbot, powered by GPT-4, delivers human-like conversations across multiple domains. It is trained on engineer code book data, making it an efficient tool for data retrieval and question/answering."}
 			</p>
 		</div>
 	</div>
@@ -55,7 +55,7 @@
 				>
 			</AnnouncementBanner>
 		{/each} -->
-		<div class="overflow-hidden rounded-xl border dark:border-gray-800">
+		<!-- <div class="overflow-hidden rounded-xl border dark:border-gray-800">
 			<div class="flex p-3">
 				<div>
 					<div class="text-sm text-gray-600 dark:text-gray-400">Current Model</div>
@@ -79,7 +79,7 @@
 				>
 			</div>
 			<ModelCardMetadata variant="dark" model={currentModel} />
-		</div>
+		</div> -->
 	</div>
 	{#if currentModelMetadata.promptExamples}
 		<div class="lg:col-span-3 lg:mt-6">

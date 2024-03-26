@@ -11,8 +11,10 @@
 	import { useSettingsStore } from "$lib/stores/settings";
 	import { cookiesAreEnabled } from "$lib/utils/cookiesAreEnabled";
 	import Logo from "./icons/Logo.svelte";
+	let passwordInput = '';
 
 	const settings = useSettingsStore();
+	const correctPassword = 'caniel123'
 </script>
 
 <Modal>
@@ -32,41 +34,51 @@
 			{PUBLIC_APP_DISCLAIMER_MESSAGE}
 		</p>
 
-		<div class="flex w-full flex-col items-center gap-2">
-			{#if $page.data.guestMode || !$page.data.loginEnabled}
-				<button
-					class="w-full justify-center rounded-full border-2 border-gray-300 bg-black px-5 py-2 text-lg font-semibold text-gray-100 transition-colors hover:bg-gray-900"
-					class:bg-white={$page.data.loginEnabled}
-					class:text-gray-800={$page.data.loginEnabled}
-					class:hover:bg-slate-100={$page.data.loginEnabled}
-					on:click|preventDefault|stopPropagation={() => {
-						if (!cookiesAreEnabled()) {
-							window.open(window.location.href, "_blank");
-						}
+        <input
+            type="password"
+            placeholder="Enter password"
+            class="mb-4 p-2 text-lg"
+            bind:value={passwordInput}
+        />
 
-						$settings.ethicsModalAccepted = true;
-					}}
-				>
-					{#if $page.data.loginEnabled}
-						Try as guest
-					{:else}
-						Start chatting
-					{/if}
-				</button>
-			{/if}
-			{#if $page.data.loginEnabled}
-				<form action="{base}/login" target="_parent" method="POST" class="w-full">
+		<div class="flex w-full flex-col items-center gap-2">
+			{#if passwordInput === correctPassword}
+				{#if !$page.data.guestMode || !$page.data.loginEnabled}
 					<button
-						type="submit"
-						class="flex w-full items-center justify-center whitespace-nowrap rounded-full border-2 border-black bg-black px-5 py-2 text-lg font-semibold text-gray-100 transition-colors hover:bg-gray-900"
+						class="w-full justify-center rounded-full border-2 border-gray-300 bg-black px-5 py-2 text-lg font-semibold text-gray-100 transition-colors hover:bg-gray-900"
+						class:bg-white={$page.data.loginEnabled}
+						class:text-gray-800={$page.data.loginEnabled}
+						class:hover:bg-slate-100={$page.data.loginEnabled}
+						on:click|preventDefault|stopPropagation={() => {
+							if (!cookiesAreEnabled()) {
+								window.open(window.location.href, "_blank");
+							}
+
+							$settings.ethicsModalAccepted = true;
+						}}
 					>
-						Sign in
-						{#if PUBLIC_APP_NAME === "HuggingChat"}
-							with <LogoHuggingFaceBorderless classNames="text-xl mr-1 ml-1.5 flex-none" /> Hugging Face
-						{/if}
+						<!-- {#if $page.data.loginEnabled}
+							Try as guest
+						{:else} -->
+							Start chatting
+						<!-- {/if} -->
 					</button>
-				</form>
+				{/if}
+				{#if $page.data.loginEnabled}
+					<form action="{base}/login" target="_parent" method="POST" class="w-full">
+						<button
+							type="submit"
+							class="flex w-full items-center justify-center whitespace-nowrap rounded-full border-2 border-black bg-black px-5 py-2 text-lg font-semibold text-gray-100 transition-colors hover:bg-gray-900"
+						>
+							Sign in
+							{#if PUBLIC_APP_NAME === "HuggingChat"}
+								with <LogoHuggingFaceBorderless classNames="text-xl mr-1 ml-1.5 flex-none" /> Hugging Face
+							{/if}
+						</button>
+					</form>
+				{/if}
 			{/if}
+
 		</div>
 	</div>
 </Modal>
