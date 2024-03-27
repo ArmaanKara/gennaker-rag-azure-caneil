@@ -41,7 +41,7 @@
 			</div>
 			<p class="text-base text-gray-600 dark:text-gray-400" style="width: 70%;">
 				{PUBLIC_APP_DESCRIPTION ||
-					"Caniel AI's Rag Chatbot, powered by GPT-4, delivers human-like conversations across multiple domains. It is trained on engineer code book data, making it an efficient tool for data retrieval and question/answering."}
+					"Caneil AI's Rag Chatbot, powered by GPT-4, delivers human-like conversations across multiple domains. It is trained on engineer code book data, making it an efficient tool for data retrieval and question/answering."}
 			</p>
 		</div>
 	</div>

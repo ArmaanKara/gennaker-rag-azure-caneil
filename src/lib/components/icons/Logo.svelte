@@ -2,15 +2,15 @@
 	import { page } from "$app/stores";
 	import { PUBLIC_APP_ASSETS, PUBLIC_APP_NAME, PUBLIC_ORIGIN } from "$env/static/public";
 	import { base } from "$app/paths";
-	import caniellogo from './caniellogo.png'
+	import caneillogo from './caniellogo.png'
 
 	export let classNames = "";
 </script>
 
 {#if PUBLIC_APP_ASSETS === "chatui"}
 	<img
-		src={caniellogo}
-		alt="Caniel logo"
+		src={caneillogo}
+		alt="Caneil logo"
 		class={classNames}
 		height="30"
 		width="30"

@@ -14,7 +14,7 @@
 	let passwordInput = '';
 
 	const settings = useSettingsStore();
-	const correctPassword = 'caniel123'
+	const correctPassword = 'caneil123'
 </script>
 
 <Modal>
