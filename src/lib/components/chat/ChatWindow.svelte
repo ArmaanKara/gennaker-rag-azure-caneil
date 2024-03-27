@@ -332,8 +332,10 @@
 				<p>
 					Model:
 					{#if !assistant}
+						<!-- <a href="{base}/settings/{currentModel.id}" class="hover:underline"
+							>{currentModel.displayName}</a -->
 						<a href="{base}/settings/{currentModel.id}" class="hover:underline"
-							>{currentModel.displayName}</a
+							>caneil-rag-chatbot-gpt4</a
 						>{:else}
 						{@const model = models.find((m) => m.id === assistant?.modelId)}
 						<a

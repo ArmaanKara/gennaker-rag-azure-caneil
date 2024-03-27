@@ -30,7 +30,8 @@
 <div class="flex flex-col items-start">
 	<div class="mb-5 flex flex-col gap-1.5">
 		<h2 class="text-lg font-semibold md:text-xl">
-			{$page.params.model}
+			<!-- {$page.params.model} -->
+			caneil-rag-chatbot-gpt4
 		</h2>
 
 		{#if model.description}
